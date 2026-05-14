@@ -1,6 +1,5 @@
 //You can edit ALL of the code here
 function setup() {
-  populateEpisodeSelect(getAllEpisodes());
   render();
 }
 
@@ -40,6 +39,8 @@ function render() {
       episode.summary.toLowerCase().includes(state.searchTerm.toLowerCase())
     );
   });
+  document.getElementById("episode-select").innerHTML = "";
+  populateEpisodeSelect(filteredEpisodes);
   makePageForEpisodes(filteredEpisodes);
 }
 
