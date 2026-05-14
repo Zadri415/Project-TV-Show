@@ -1,6 +1,4 @@
 //You can edit ALL of the code here
-let allEpisodes = [];
-
 function stripHtml(html = "") {
   const d = document.createElement("div");
   d.innerHTML = html;
@@ -22,9 +20,10 @@ function setup() {
     })
 
     .then(function (episodes) {
-      allEpisodes = episodes;
+      state.episodes = episodes;
 
-      makePageForEpisodes(allEpisodes);
+      makePageForEpisodes(episodes);
+      populateEpisodeSelect(episodes);
     })
 
     .catch(function () {
@@ -85,5 +84,54 @@ function makePageForEpisodes(episodeList) {
     rootElem.appendChild(card);
   });
 }
+function render() {
+  const filteredEpisodes = state.episodes.filter(function (episode) {
+    return (
+      episode.name.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+      episode.summary.toLowerCase().includes(state.searchTerm.toLowerCase())
+    );
+  });
+  document.getElementById("episode-select").innerHTML = "";
+  populateEpisodeSelect(filteredEpisodes);
+  makePageForEpisodes(filteredEpisodes);
+}
+
+const state = {
+  episodes: [],
+  searchTerm: "",
+};
+
+function createEpisodeCode(episode) {
+  const seasonNum = String(episode.season);
+  const episodeNum = String(episode.number);
+  return `S${seasonNum.padStart(2, 0)}E${episodeNum.padStart(2, 0)}`;
+}
+function populateEpisodeSelect(episodes) {
+  const select = document.getElementById("episode-select");
+  episodes.forEach((episode) => {
+    const option = document.createElement("option");
+    option.value = episode.id;
+    option.textContent = `${createEpisodeCode(episode)} - ${episode.name}`;
+    select.appendChild(option);
+  });
+}
+
+const episodeSelect = document.getElementById("episode-select");
+episodeSelect.addEventListener("change", (event) => {
+  const targetId = event.target.value;
+
+  if (targetId) {
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+});
+
+const searchInput = document.querySelector("input");
+searchInput.addEventListener("keyup", function () {
+  state.searchTerm = searchInput.value;
+  render();
+});
 
 window.onload = setup;

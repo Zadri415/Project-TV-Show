@@ -1,32 +1,41 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TV Show Project | Zadri Abdule (Zadri415)</title>
-    <link href="style.css" rel="stylesheet" />
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-  </head>
 
-  <body>
-    <div id="root"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TV Show Project | Zadri Abdule (Zadri415)</title>
+  <link href="style.css" rel="stylesheet" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+</head>
 
-    <template id="episode-card-template">
-      <article class="episode-card">
-        <h2 class="episode-title"></h2>
-        <img src="" alt="" />
-        <p class="episode-desc"></p>
-      </article>
-    </template>
+<body>
+  <label for="episode-select">Choose an episode:</label>
+  <select id="episode-select">
+    <option value="">Show all episodes</option>
+  </select>
+  <label>
+    Search <input type="search" id="q" name="q" placeholder="Search term" /> 🔍
+  </label>
+  <div id="root"></div>
 
-    <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
 
-    <!-- Loads YOUR javascript code -->
-    <script src="script.js"></script>
 
-    <footer>
-      Episode information from
-      <a href="https://www.tvmaze.com/">TVMaze</a>
-    </footer>
-  </body>
+  <template id="episode-card-template">
+    <article class="episode-card">
+      <h2 class="episode-title"></h2>
+      <img src="" alt="" />
+      <p class="episode-desc"></p>
+    </article>
+  </template>
+
+  <!-- Loads YOUR javascript code -->
+  <script src="script.js"></script>
+
+  <footer>
+    Episode information from
+    <a href="https://www.tvmaze.com/">TVMaze</a>
+  </footer>
+</body>
+
 </html>
