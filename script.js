@@ -1,7 +1,6 @@
 //You can edit ALL of the code here
 function setup() {
-  const allEpisodes = getAllEpisodes();
-  makePageForEpisodes(allEpisodes);
+  render();
 }
 
 function makePageForEpisodes(episodeList) {
@@ -32,4 +31,24 @@ function makePageForEpisodes(episodeList) {
   });
 }
 
+const state = {
+  episodes: getAllEpisodes(),
+  searchTerm: "",
+};
+
+function render() {
+  makePageForEpisodes(state.episodes);
+}
+
 window.onload = setup;
+
+// Only episodes whose summary OR name contains the search term should be displayed
+// The search should be case-insensitive
+// The display should update immediately after each keystroke changes the input
+// Display how many episodes match the current search
+// If the search box is cleared, all episodes should be shown
+
+// Add a select drop-down which lets the user jump quickly to a particular episode, with the following requirements:
+
+// The select input should list all episodes in the format: “S01E01 - Winter is Coming”
+// When the user makes a selection, they should be taken directly to that episode in the list
