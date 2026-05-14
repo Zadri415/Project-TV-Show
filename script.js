@@ -31,14 +31,26 @@ function makePageForEpisodes(episodeList) {
   });
 }
 
+function render() {
+  const filteredEpisodes = state.episodes.filter(function (episode) {
+    return (
+      episode.name.includes(state.searchTerm) ||
+      episode.summary.includes(state.searchTerm)
+    );
+  });
+  makePageForEpisodes(filteredEpisodes);
+}
+
 const state = {
   episodes: getAllEpisodes(),
   searchTerm: "",
 };
 
-function render() {
-  makePageForEpisodes(state.episodes);
-}
+const searchInput = document.querySelector("input");
+searchInput.addEventListener("keyup", function () {
+  state.searchTerm = searchInput.value;
+  render();
+});
 
 window.onload = setup;
 
