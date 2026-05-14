@@ -1,6 +1,12 @@
 //You can edit ALL of the code here
 let allEpisodes = [];
 
+function stripHtml(html = "") {
+  const d = document.createElement("div");
+  d.innerHTML = html;
+  return d.textContent || d.innerText || "";
+}
+
 function setup() {
   const rootElem = document.getElementById("root");
 
@@ -32,23 +38,49 @@ function makePageForEpisodes(episodeList) {
   rootElem.innerHTML = "";
 
   episodeList.forEach((episode) => {
-    const card = document.createElement("article");
+    const episodeCode = `S${String(episode.season).padStart(2, "0")}E${String(
+      episode.number,
+    ).padStart(2, "0")}`;
 
-    const episodeCode = `S${String(episode.season).padStart(
-      2,
-      "0",
-    )}E${String(episode.number).padStart(2, "0")}`;
+    // Use template if available
+    const template = document.getElementById("episode-card-template");
+    let card;
+    if (template && template.content) {
+      card = template.content.firstElementChild.cloneNode(true);
+      const titleEl = card.querySelector(".episode-title");
+      const imgEl = card.querySelector("img");
+      const descEl = card.querySelector(".episode-desc");
 
-    card.innerHTML = `
-      <h2>${episode.name} - ${episodeCode}</h2>
+      if (titleEl) {
+        titleEl.textContent = `${episode.name} - ${episodeCode}`;
+      }
 
-      <img 
-        src="${episode.image.medium}" 
-        alt="${episode.name}"
-      />
+      const imgSrc =
+        episode.image && episode.image.medium
+          ? episode.image.medium
+          : "https://via.placeholder.com/210x295?text=No+Image";
+      if (imgEl) {
+        imgEl.src = imgSrc;
+        imgEl.alt = episode.name || "Episode image";
+      }
 
-      <p>${episode.summary}</p>
-    `;
+      if (descEl) {
+        descEl.textContent = episode.summary
+          ? stripHtml(episode.summary)
+          : "No summary available.";
+      }
+    } else {
+      card = document.createElement("article");
+      card.innerHTML = `
+        <h2>${episode.name} - ${episodeCode}</h2>
+        <img src="${episode.image && episode.image.medium ? episode.image.medium : "https://via.placeholder.com/210x295?text=No+Image"}" alt="${episode.name || "Episode image"}" />
+      `;
+      const p = document.createElement("p");
+      p.textContent = episode.summary
+        ? stripHtml(episode.summary)
+        : "No summary available.";
+      card.appendChild(p);
+    }
 
     rootElem.appendChild(card);
   });
