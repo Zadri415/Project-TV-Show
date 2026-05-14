@@ -34,8 +34,8 @@ function makePageForEpisodes(episodeList) {
 function render() {
   const filteredEpisodes = state.episodes.filter(function (episode) {
     return (
-      episode.name.includes(state.searchTerm) ||
-      episode.summary.includes(state.searchTerm)
+      episode.name.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+      episode.summary.toLowerCase().includes(state.searchTerm.toLowerCase())
     );
   });
   makePageForEpisodes(filteredEpisodes);
