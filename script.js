@@ -1,5 +1,6 @@
 //You can edit ALL of the code here
 function setup() {
+  populateEpisodeSelect(getAllEpisodes());
   render();
 }
 
@@ -10,6 +11,7 @@ function makePageForEpisodes(episodeList) {
 
   episodeList.forEach((episode) => {
     const card = document.createElement("article");
+    card.id = episode.id;
 
     const episodeCode = `S${String(episode.season).padStart(
       2,
@@ -50,6 +52,34 @@ const searchInput = document.querySelector("input");
 searchInput.addEventListener("keyup", function () {
   state.searchTerm = searchInput.value;
   render();
+});
+
+function populateEpisodeSelect(episodes) {
+  const select = document.getElementById("episode-select");
+  episodes.forEach((episode) => {
+    const option = document.createElement("option");
+    option.value = episode.id;
+    option.textContent = `${createEpisodeCode(episode)} - ${episode.name}`;
+    select.appendChild(option);
+  });
+}
+
+function createEpisodeCode(episode) {
+  const seasonNum = String(episode.season);
+  const episodeNum = String(episode.number);
+  return `S${seasonNum.padStart(2, 0)}E${episodeNum.padStart(2, 0)}`;
+}
+
+const episodeSelect = document.getElementById("episode-select");
+episodeSelect.addEventListener("change", (event) => {
+  const targetId = event.target.value;
+
+  if (targetId) {
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 });
 
 window.onload = setup;
