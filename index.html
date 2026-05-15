@@ -10,19 +10,23 @@
 </head>
 
 <body>
-  <label for="episode-select">Choose an episode:</label>
+    <label for="show-select">Choose a Show:</label>
+    <select id="show-select">
+      <option value="">All Shows</option></select>
+  <label for="episode-select">Choose an Episode:</label>
   <select id="episode-select">
-    <option value="">Show all episodes</option>
+    <option value="">All Episodes</option>
   </select>
   <label>
-    Search <input type="search" id="q" name="q" placeholder="Search term" /> 🔍
+    Search <input type="search" id="q" name="q" placeholder="Search term" /> 🔍 <span id="search-count"></span>
   </label>
+  
   <div id="root"></div>
 
 
 
   <template id="episode-card-template">
-    <article class="episode-card">
+    <article id="" class="episode-card">
       <h2 class="episode-title"></h2>
       <img src="" alt="" />
       <p class="episode-desc"></p>
