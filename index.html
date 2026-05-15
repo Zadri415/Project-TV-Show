@@ -1,45 +1,42 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TV Show Project | Zadri Abdule (Zadri415)</title>
+    <link href="style.css" rel="stylesheet" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TV Show Project | Zadri Abdule (Zadri415)</title>
-  <link href="style.css" rel="stylesheet" />
-  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-</head>
+  <body>
+    <label for="episode-select">Choose an episode:</label>
+    <select id="episode-select">
+      <option value="">Show all episodes</option>
+    </select>
+    <label>
+    Search <input type="search" id="q" name="q" placeholder="Search term" /> 🔍
+    </label>
+    <div id="root"></div>
 
-<body>
-    <label for="show-select">Choose a Show:</label>
-    <select id="show-select">
-      <option value="">All Shows</option></select>
-  <label for="episode-select">Choose an Episode:</label>
-  <select id="episode-select">
-    <option value="">All Episodes</option>
-  </select>
-  <label>
-    Search <input type="search" id="q" name="q" placeholder="Search term" /> 🔍 <span id="search-count"></span>
-  </label>
-  
-  <div id="root"></div>
+    
 
+    <template id="episode-card-template">
+      <article class="episode-card">
+        <h2 class="episode-title"></h2>
+        <img src="" alt="" />
+        <p class="episode-desc"></p>
+      </article>
+    </template>
 
+    <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
+    <script src="episodes.js"></script>
 
-  <template id="episode-card-template">
-    <article id="" class="episode-card">
-      <h2 class="episode-title"></h2>
-      <img src="" alt="" />
-      <p class="episode-desc"></p>
-    </article>
-  </template>
+    <!-- Loads YOUR javascript code -->
+    <script src="script.js"></script>
 
-  <!-- Loads YOUR javascript code -->
-  <script src="script.js"></script>
-
-  <footer>
-    Episode information from
-    <a href="https://www.tvmaze.com/">TVMaze</a>
-  </footer>
-</body>
-
+    <footer>
+      Episode information from
+      <a href="https://www.tvmaze.com/">TVMaze</a>
+    </footer>
+  </body>
 </html>
