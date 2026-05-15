@@ -5,32 +5,49 @@ const template = document.getElementById("episode-card-template");
 const showSelect = document.getElementById("show-select");
 const episodeSelect = document.getElementById("episode-select");
 
+// holds state of shows, current tv show episodes and cache
+const state = {
+  shows: [],
+  episodes: [],
+  episodeCache: {},
+  searchTerm: "",
+};
+
 function stripHtml(html = "") {
   const d = document.createElement("div");
   d.innerHTML = html;
   return d.textContent || d.innerText || "";
 }
 
-// fetches data and sets up page on load
-// function setup() {
-//   rootElem.innerHTML = "Loading episodes...";
-
-//   fetch("https://api.tvmaze.com/shows/82/episodes")
-//     .then(function (response) {
-//       if (!response.ok) {
-//         throw new Error("Failed to load episodes");
-//       }
-//       return response.json();
-//     })
-//     .then(function (episodes) {
-//       state.episodes = episodes;
-
-//       render();
-//     })
-//     .catch(function () {
-//       rootElem.innerHTML = "Sorry, there was a problem loading episodes.";
-//     });
-// }
+//gets episodes information for show
+function getEpisodes(showId) {
+  const showName = state.shows.find((show) => show.id === Number(showId)).name;
+  //checks cache for episodes
+  if (state.episodeCache[showId]) {
+    state.episodes = state.episodeCache[showId];
+    console.log(`fetched ${showName} episodes from cache`);
+    render();
+    return;
+  }
+  //fetches episodes from API
+  rootElem.innerHTML = "Loading episodes...";
+  fetch(`https://api.tvmaze.com/shows/${showId}/episodes`)
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("Failed to load episodes");
+      }
+      return response.json();
+    })
+    .then(function (episodes) {
+      console.log(`fetched ${showName} episodes from tvMaze`);
+      state.episodeCache[showId] = episodes;
+      state.episodes = episodes;
+      render();
+    })
+    .catch(function () {
+      rootElem.innerHTML = "Sorry, there was a problem loading episodes.";
+    });
+}
 
 //fetches shows
 function setup() {
@@ -43,6 +60,7 @@ function setup() {
       return response.json();
     })
     .then(function (shows) {
+      console.log("fetched shows from tvMaze");
       state.shows = shows;
       state.shows.sort((a, b) => a.name.localeCompare(b.name));
       populateShowSelect(shows);
@@ -117,18 +135,9 @@ function render() {
   });
   episodeSelect.innerHTML = "";
   searchCount.textContent = `Displaying ${filteredEpisodes.length} / ${state.episodes.length} episodes`;
-  populateShowSelect(shows);
   populateEpisodeSelect(filteredEpisodes);
   makePageForEpisodes(filteredEpisodes);
 }
-
-// holds state of current tv show
-const state = {
-  shows: [],
-  episodes: [],
-  episodeCache: {},
-  searchTerm: "",
-};
 
 //creates episode code e.g. S01E05
 function createEpisodeCode(episode) {
@@ -136,6 +145,7 @@ function createEpisodeCode(episode) {
   const episodeNum = String(episode.number);
   return `S${seasonNum.padStart(2, 0)}E${episodeNum.padStart(2, 0)}`;
 }
+
 // populates show selection dropdown menu
 function populateShowSelect(shows) {
   rootElem.innerHTML = "";
@@ -158,6 +168,11 @@ function populateEpisodeSelect(episodes) {
     episodeSelect.appendChild(option);
   });
 }
+
+// event listener for show dropdown - populates episode list
+showSelect.addEventListener("change", (event) => {
+  getEpisodes(event.target.value);
+});
 
 // event listener for episode dropdown - scrolls to episode on select
 episodeSelect.addEventListener("change", (event) => {
