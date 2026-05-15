@@ -1,32 +1,105 @@
-//You can edit ALL of the code here
+//Global DOM elements
+const searchCount = document.getElementById("search-count");
+const rootElem = document.getElementById("root");
+const template = document.getElementById("episode-card-template");
+const showSelect = document.getElementById("show-select");
+const episodeSelect = document.getElementById("episode-select");
+
+// holds state of shows, current tv show episodes and cache
+const state = {
+  shows: [],
+  episodes: [],
+  episodeCache: {},
+  searchTerm: "",
+};
+
+function stripHtml(html = "") {
+  const d = document.createElement("div");
+  d.innerHTML = html;
+  return d.textContent || d.innerText || "";
+}
+
+//gets episodes information for show
+function getEpisodes(showId) {
+  const showName = state.shows.find((show) => show.id === Number(showId)).name;
+  //checks cache for episodes
+  if (state.episodeCache[showId]) {
+    state.episodes = state.episodeCache[showId];
+    console.log(`fetched ${showName} episodes from cache`);
+    render();
+    return;
+  }
+  //fetches episodes from API
+  rootElem.innerHTML = "Loading episodes...";
+  fetch(`https://api.tvmaze.com/shows/${showId}/episodes`)
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("Failed to load episodes");
+      }
+      return response.json();
+    })
+    .then(function (episodes) {
+      console.log(`fetched ${showName} episodes from tvMaze`);
+      state.episodeCache[showId] = episodes;
+      state.episodes = episodes;
+      render();
+    })
+    .catch(function () {
+      rootElem.innerHTML = "Sorry, there was a problem loading episodes.";
+    });
+}
+
+//fetches shows
 function setup() {
   render();
 }
 
+// creates episode cards
 function makePageForEpisodes(episodeList) {
-  const rootElem = document.getElementById("root");
-
   rootElem.innerHTML = "";
 
   episodeList.forEach((episode) => {
     const card = document.createElement("article");
     card.id = episode.id;
 
-    const episodeCode = `S${String(episode.season).padStart(
-      2,
-      "0",
-    )}E${String(episode.number).padStart(2, "0")}`;
+    let card;
+    if (template && template.content) {
+      card = template.content.firstElementChild.cloneNode(true);
+      card.id = episode.id;
+      const titleEl = card.querySelector(".episode-title");
+      const imgEl = card.querySelector("img");
+      const descEl = card.querySelector(".episode-desc");
 
-    card.innerHTML = `
-      <h2>${episode.name} - ${episodeCode}</h2>
+      if (titleEl) {
+        titleEl.textContent = `${episode.name} - ${episodeCode}`;
+      }
 
-      <img 
-        src="${episode.image.medium}" 
-        alt="${episode.name}"
-      />
+      const imgSrc =
+        episode.image && episode.image.medium
+          ? episode.image.medium
+          : "https://via.placeholder.com/210x295?text=No+Image";
+      if (imgEl) {
+        imgEl.src = imgSrc;
+        imgEl.alt = episode.name || "Episode image";
+      }
 
-      <p>${episode.summary}</p>
-    `;
+      if (descEl) {
+        descEl.textContent = episode.summary
+          ? stripHtml(episode.summary)
+          : "No summary available.";
+      }
+    } else {
+      card = document.createElement("article");
+      card.innerHTML = `
+        <h2>${episode.name} - ${episodeCode}</h2>
+        <img src="${episode.image && episode.image.medium ? episode.image.medium : "https://via.placeholder.com/210x295?text=No+Image"}" alt="${episode.name || "Episode image"}" />
+      `;
+      const p = document.createElement("p");
+      p.textContent = episode.summary
+        ? stripHtml(episode.summary)
+        : "No summary available.";
+      card.appendChild(p);
+    }
 
     rootElem.appendChild(card);
   });
