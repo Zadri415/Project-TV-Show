@@ -1,9 +1,10 @@
 # Level 0
 
 The goals of level 0 are to:
-* Create a GitHub repository with the starter scaffolding in-place.
-* Deploy it to Netlify.
-* Make sure whenever you push changes your Netlify site will be updated.
+
+- Create a GitHub repository with the starter scaffolding in-place.
+- Deploy it to Netlify.
+- Make sure whenever you push changes your Netlify site will be updated.
 
 ## Fork your repository
 
@@ -34,7 +35,8 @@ The goals of level 0 are to:
 ## Completion criteria
 
 You have completed level 0 when:
-- [ ] You have forked the GitHub repository called `Project-TV-Show` into your account.
-- [ ] The `index.html` page on your GitHub project contains your name and GitHub username.
-- [ ] Your project is deployed to Netlify at `cyf-USERNAME-tv.netlify.app`.
-- [ ] Your deployed project has your name and GitHub username in its title.
+
+- [x] You have forked the GitHub repository called `Project-TV-Show` into your account.
+- [x] The `index.html` page on your GitHub project contains your name and GitHub username.
+- [x] Your project is deployed to Netlify at `cyf-USERNAME-tv.netlify.app`.
+- [x] Your deployed project has your name and GitHub username in its title.
