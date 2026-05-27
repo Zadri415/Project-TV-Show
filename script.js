@@ -1,4 +1,6 @@
-//You can edit ALL of the code here
+// DOMS
+const rootElem = document.getElementById("root");
+
 function setup() {
   // grab all the episodes from the data file
   const allEpisodes = getAllEpisodes();
@@ -7,21 +9,12 @@ function setup() {
 }
 
 function makePageForEpisodes(episodeList) {
-  // find the root div in HTML (this is where episodes will go)
-  const rootElem = document.getElementById("root");
   // clear anything already inside root
   rootElem.innerHTML = "";
 
   // go through each episode one by one
   episodeList.forEach(function (episode) {
-    // make the episode code look like S01E07
-    // padStart adds a 0 if the number is only 1 digit
-    const episodeCode =
-      "S" +
-      String(episode.season).padStart(2, "0") +
-      "E" +
-      String(episode.number).padStart(2, "0");
-
+    const episodeCode = createEpisodeCode(episode);
     const card = document.createElement("article");
     // put the episode info inside the card
     card.innerHTML = `
@@ -32,6 +25,15 @@ function makePageForEpisodes(episodeList) {
     // add the card to the page
     rootElem.appendChild(card);
   });
+}
+
+// make the episode code look like S01E07
+// padStart adds a 0 if the number is only 1 digit
+function createEpisodeCode(episode) {
+  "S" +
+    String(episode.season).padStart(2, "0") +
+    "E" +
+    String(episode.number).padStart(2, "0");
 }
 
 window.onload = setup;
