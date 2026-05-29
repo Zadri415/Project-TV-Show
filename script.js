@@ -3,6 +3,7 @@ const rootElem = document.getElementById("root");
 const episodeTemplate = document.getElementById("episode-template");
 const episodeSearch = document.getElementById("episode-search");
 const searchCount = document.getElementById("search-count");
+const episodeSelect = document.getElementById("episode-select");
 
 // State
 const state = {
@@ -36,6 +37,9 @@ episodeSearch.addEventListener("keyup", function () {
   state.searchTerm = episodeSearch.value;
   render();
 });
+
+// _____________________________________________________________________________
+// EPISODE SELECT DROP-DOWN
 
 // _____________________________________________________________________________
 //  EPISODES
