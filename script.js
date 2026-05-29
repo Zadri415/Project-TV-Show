@@ -1,37 +1,101 @@
-//You can edit ALL of the code here
-function setup() {
-  // grab all the episodes from the data file
-  const allEpisodes = getAllEpisodes();
-  // pass them into our function so we can display them
-  makePageForEpisodes(allEpisodes);
+// DOMS
+const rootElem = document.getElementById("root");
+const episodeTemplate = document.getElementById("episode-template");
+const episodeSearch = document.getElementById("episode-search");
+const searchCount = document.getElementById("search-count");
+const episodeSelect = document.getElementById("episode-select");
+
+// State
+const state = {
+  episodes: getAllEpisodes(),
+  searchTerm: "",
+};
+
+// Render page
+function render() {
+  const filteredEpisodes = filterEpisodes();
+  makePageForEpisodes(filteredEpisodes);
+  updateSearchCount(filteredEpisodes);
+  populateEpisodeSelect(filteredEpisodes);
 }
 
+// _____________________________________________________________________________
+// SEARCH BAR
+
+function filterEpisodes() {
+  return state.episodes.filter(function (episode) {
+    return (
+      episode.name.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+      episode.summary.toLowerCase().includes(state.searchTerm.toLowerCase())
+    );
+  });
+}
+
+function updateSearchCount(filteredEpisodes) {
+  searchCount.textContent = `Displaying ${filteredEpisodes.length} / ${state.episodes.length} shows`;
+}
+
+episodeSearch.addEventListener("keyup", function () {
+  state.searchTerm = episodeSearch.value;
+  render();
+});
+
+// _____________________________________________________________________________
+// EPISODE SELECT DROP-DOWN
+
+function populateEpisodeSelect(episodes) {
+  episodeSelect.innerHTML = "";
+  episodes.forEach((episode) => {
+    const option = document.createElement("option");
+    option.value = episode.id;
+    option.textContent = `${createEpisodeCode(episode)} - ${episode.name}`;
+    episodeSelect.appendChild(option);
+  });
+}
+
+episodeSelect.addEventListener("change", (event) => {
+  const element = document.getElementById(event.target.value);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+
+// _____________________________________________________________________________
+//  EPISODES
+
 function makePageForEpisodes(episodeList) {
-  // find the root div in HTML (this is where episodes will go)
-  const rootElem = document.getElementById("root");
   // clear anything already inside root
   rootElem.innerHTML = "";
 
   // go through each episode one by one
-  episodeList.forEach(function (episode) {
-    // make the episode code look like S01E07
-    // padStart adds a 0 if the number is only 1 digit
-    const episodeCode =
-      "S" +
-      String(episode.season).padStart(2, "0") +
-      "E" +
-      String(episode.number).padStart(2, "0");
-
-    const card = document.createElement("article");
-    // put the episode info inside the card
-    card.innerHTML = `
-        <h2>${episode.name} - ${episodeCode}</h2>
-        <img src="${episode.image.medium}" alt="${episode.name}">
-        <p>${episode.summary}</p>
-      `;
-    // add the card to the page
-    rootElem.appendChild(card);
-  });
+  episodeList.forEach(addEpisode);
 }
 
-window.onload = setup;
+function addEpisode(episode) {
+  const clone = episodeTemplate.content.cloneNode(true);
+  const episodeCode = createEpisodeCode(episode);
+
+  // put the episode info inside the clone
+  clone.querySelector("h2").textContent = `${episode.name} - ${episodeCode}`;
+  clone.querySelector("img").src = episode.image.medium;
+  clone.querySelector("p").textContent = episode.summary;
+  clone.querySelector("article").id = episode.id;
+
+  // add the clone to the page
+  rootElem.appendChild(clone);
+}
+
+function createEpisodeCode(episode) {
+  // make the episode code look like S01E07
+  // padStart adds a 0 if the number is only 1 digit
+  return (
+    "S" +
+    String(episode.season).padStart(2, "0") +
+    "E" +
+    String(episode.number).padStart(2, "0")
+  );
+}
+
+// _____________________________________________________________________________
+
+window.onload = render;

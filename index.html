@@ -9,16 +9,27 @@
   </head>
 
   <body>
-    <h1>TV Show Episodes</h1>
+    <!-- Episode select drop-down menu -->
+    <label for="episode-select">Choose an episode:</label>
+    <select id="episode-select">
+      <option value="">Show all episodes</option>
+    </select>
 
+    <!-- Search bar -->
+    <label>
+    Search <input type="search" id="episode-search" placeholder="Search term" /> 🔍
+    </label>
+    <span id="search-count"></span>
+    
+    <h1>TV Show Episodes</h1>
     <div id="root"></div>
 
     <!-- Template for an episode card. JavaScript can clone this and fill in the fields. -->
     <template id="episode-template">
-      <article class="episode-card">
-        <h2 class="episode-title">Episode Title - S00E00</h2>
-        <img class="episode-image" src="" alt="Episode image" />
-        <p class="episode-summary"></p>
+      <article>
+        <h2>Episode Title - S00E00</h2>
+        <img src="">
+        <p></p>
       </article>
     </template>
 
