@@ -13,14 +13,16 @@ const state = {
 
 // Render page
 function render() {
-  makePageForEpisodes(filteredEpisodes());
-  updateSearchCount();
+  const filteredEpisodes = filterEpisodes();
+  makePageForEpisodes(filteredEpisodes);
+  updateSearchCount(filteredEpisodes);
+  populateEpisodeSelect(filteredEpisodes);
 }
 
 // _____________________________________________________________________________
 // SEARCH BAR
 
-function filteredEpisodes() {
+function filterEpisodes() {
   return state.episodes.filter(function (episode) {
     return (
       episode.name.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
@@ -29,8 +31,8 @@ function filteredEpisodes() {
   });
 }
 
-function updateSearchCount() {
-  searchCount.textContent = `Displaying ${filteredEpisodes().length} / ${state.episodes.length} shows`;
+function updateSearchCount(filteredEpisodes) {
+  searchCount.textContent = `Displaying ${filteredEpisodes.length} / ${state.episodes.length} shows`;
 }
 
 episodeSearch.addEventListener("keyup", function () {
@@ -40,6 +42,23 @@ episodeSearch.addEventListener("keyup", function () {
 
 // _____________________________________________________________________________
 // EPISODE SELECT DROP-DOWN
+
+function populateEpisodeSelect(episodes) {
+  episodeSelect.innerHTML = "";
+  episodes.forEach((episode) => {
+    const option = document.createElement("option");
+    option.value = episode.id;
+    option.textContent = `${createEpisodeCode(episode)} - ${episode.name}`;
+    episodeSelect.appendChild(option);
+  });
+}
+
+episodeSelect.addEventListener("change", (event) => {
+  const element = document.getElementById(event.target.value);
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
 
 // _____________________________________________________________________________
 //  EPISODES
@@ -60,6 +79,7 @@ function addEpisode(episode) {
   clone.querySelector("h2").textContent = `${episode.name} - ${episodeCode}`;
   clone.querySelector("img").src = episode.image.medium;
   clone.querySelector("p").textContent = episode.summary;
+  clone.querySelector("article").id = episode.id;
 
   // add the clone to the page
   rootElem.appendChild(clone);
