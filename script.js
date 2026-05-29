@@ -1,13 +1,44 @@
 // DOMS
 const rootElem = document.getElementById("root");
 const episodeTemplate = document.getElementById("episode-template");
+const episodeSearch = document.getElementById("episode-search");
+const searchCount = document.getElementById("search-count");
 
-function setup() {
-  // grab all the episodes from the data file
-  const allEpisodes = getAllEpisodes();
-  // pass them into our function so we can display them
-  makePageForEpisodes(allEpisodes);
+// State
+const state = {
+  episodes: getAllEpisodes(),
+  searchTerm: "",
+};
+
+// Render page
+function render() {
+  makePageForEpisodes(filteredEpisodes());
+  updateSearchCount();
 }
+
+// _____________________________________________________________________________
+// SEARCH BAR
+
+function filteredEpisodes() {
+  return state.episodes.filter(function (episode) {
+    return (
+      episode.name.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+      episode.summary.toLowerCase().includes(state.searchTerm.toLowerCase())
+    );
+  });
+}
+
+function updateSearchCount() {
+  searchCount.textContent = `Displaying ${filteredEpisodes().length} / ${state.episodes.length} shows`;
+}
+
+episodeSearch.addEventListener("keyup", function () {
+  state.searchTerm = episodeSearch.value;
+  render();
+});
+
+// _____________________________________________________________________________
+//  EPISODES
 
 function makePageForEpisodes(episodeList) {
   // clear anything already inside root
@@ -18,21 +49,21 @@ function makePageForEpisodes(episodeList) {
 }
 
 function addEpisode(episode) {
-  const episodeCode = createEpisodeCode(episode);
   const clone = episodeTemplate.content.cloneNode(true);
+  const episodeCode = createEpisodeCode(episode);
 
-  // put the episode info inside the card
+  // put the episode info inside the clone
   clone.querySelector("h2").textContent = `${episode.name} - ${episodeCode}`;
   clone.querySelector("img").src = episode.image.medium;
   clone.querySelector("p").textContent = episode.summary;
 
-  // add the card to the page
+  // add the clone to the page
   rootElem.appendChild(clone);
 }
 
-// make the episode code look like S01E07
-// padStart adds a 0 if the number is only 1 digit
 function createEpisodeCode(episode) {
+  // make the episode code look like S01E07
+  // padStart adds a 0 if the number is only 1 digit
   return (
     "S" +
     String(episode.season).padStart(2, "0") +
@@ -41,4 +72,6 @@ function createEpisodeCode(episode) {
   );
 }
 
-window.onload = setup;
+// _____________________________________________________________________________
+
+window.onload = render;
