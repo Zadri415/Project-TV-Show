@@ -1,4 +1,8 @@
 //You can edit ALL of the code here
+
+// amount of episodes found
+const amount = document.getElementById("amount");
+
 function setup() {
   // grab all the episodes from the data file
   const allEpisodes = getAllEpisodes();
@@ -20,7 +24,10 @@ function handleSearch(event) {
   } else {
     filtered = allEpisodes;
   }
+
   makePageForEpisodes(filtered);
+
+  amount.innerText = filtered.length + " episodes found";
 }
 
 function makePageForEpisodes(episodeList) {
