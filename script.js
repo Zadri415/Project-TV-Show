@@ -6,6 +6,23 @@ function setup() {
   makePageForEpisodes(allEpisodes);
 }
 
+function handleSearch(event) {
+  const query = event.target.value.trim().toLowerCase();
+
+  const allEpisodes = getAllEpisodes();
+
+  if (query) {
+    filtered = allEpisodes.filter(
+      (ep) =>
+        ep.name.toLowerCase().includes(query) ||
+        (ep.summary ?? "").toLowerCase().includes(query),
+    );
+  } else {
+    filtered = allEpisodes;
+  }
+  makePageForEpisodes(filtered);
+}
+
 function makePageForEpisodes(episodeList) {
   // find the root div in HTML (this is where episodes will go)
   const rootElem = document.getElementById("root");

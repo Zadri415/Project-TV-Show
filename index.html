@@ -12,11 +12,13 @@
     <h1>TV Show Episodes</h1>
 
     <search>
-      <form action="./search/">
-        <label for="movie">Find an episode</label>
-        <input type="search" id="episode" name="q" />
-        <button type="submit">Search</button>
-      </form>
+      <label for="movie">Find an episode</label>
+      <input
+        type="search"
+        id="episode"
+        name="q"
+        oninput="handleSearch(event)"
+      />
     </search>
 
     <div id="root"></div>
