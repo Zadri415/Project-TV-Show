@@ -5,11 +5,54 @@ const episodeSearch = document.getElementById("episode-search");
 const searchCount = document.getElementById("search-count");
 const episodeSelect = document.getElementById("episode-select");
 
+const EPISODES_URL = "https://api.tvmaze.com/shows/82/episodes";
+
 // State
 const state = {
-  episodes: getAllEpisodes(),
+  episodes: [],
   searchTerm: "",
 };
+
+// _____________________________________________________________________________
+// LOADING / ERROR STATES (level 300 requirements 4 & 5)
+
+function showLoadingMessage() {
+  rootElem.textContent = "Loading episodes, please wait...";
+}
+
+function showErrorMessage(error) {
+  rootElem.textContent =
+    "Sorry, something went wrong loading the episodes. Please try again later.";
+
+  const detail = document.createElement("p");
+  detail.className = "error-detail";
+  detail.textContent = error.message;
+  rootElem.appendChild(detail);
+}
+
+// _____________________________________________________________________________
+// FETCH (level 300 requirements 2 & 3: fetch once, from the API)
+
+function setup() {
+  showLoadingMessage();
+
+  fetch(EPISODES_URL)
+    .then((response) => {
+      if (!response.ok) {
+        // fetch only rejects on network failure, not on 4xx/5xx responses,
+        // so this check is needed to catch a bad status too.
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((episodes) => {
+      state.episodes = episodes;
+      render();
+    })
+    .catch((error) => {
+      showErrorMessage(error);
+    });
+}
 
 // Render page
 function render() {
@@ -35,7 +78,7 @@ function updateSearchCount(filteredEpisodes) {
   searchCount.textContent = `Displaying ${filteredEpisodes.length} / ${state.episodes.length} shows`;
 }
 
-episodeSearch.addEventListener("keyup", function () {
+episodeSearch.addEventListener("input", function () {
   state.searchTerm = episodeSearch.value;
   render();
 });
@@ -56,7 +99,7 @@ function populateEpisodeSelect(episodes) {
 episodeSelect.addEventListener("change", (event) => {
   const element = document.getElementById(event.target.value);
   if (element) {
-    element.scrollIntoView({ behavior: "smooth", block: "start" });
+    element.scrollIntoView({behavior: "smooth", block: "start"});
   }
 });
 
@@ -98,4 +141,4 @@ function createEpisodeCode(episode) {
 
 // _____________________________________________________________________________
 
-window.onload = render;
+window.onload = setup;
