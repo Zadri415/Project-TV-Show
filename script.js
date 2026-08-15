@@ -4,12 +4,17 @@ const episodeTemplate = document.getElementById("episode-template");
 const episodeSearch = document.getElementById("episode-search");
 const searchCount = document.getElementById("search-count");
 const episodeSelect = document.getElementById("episode-select");
+const showSelect = document.getElementById("show-select");
 
 const EPISODES_URL = "https://api.tvmaze.com/shows/82/episodes";
+const SHOWS_URL = "https://api.tvmaze.com/shows";
 
 // State
 const state = {
   episodes: [],
+  shows: [],
+  currentShowID: 82, // Game of Thrones
+  isShowListInitialized: false,
   searchTerm: "",
 };
 
@@ -36,7 +41,8 @@ function showErrorMessage(error) {
 function setup() {
   showLoadingMessage();
 
-  fetch(EPISODES_URL)
+  // fetch episodes
+  fetch(`https://api.tvmaze.com/shows/${state.currentShowID}/episodes`)
     .then((response) => {
       if (!response.ok) {
         // fetch only rejects on network failure, not on 4xx/5xx responses,
@@ -52,6 +58,29 @@ function setup() {
     .catch((error) => {
       showErrorMessage(error);
     });
+
+  // fetch avaliable shows
+  // https://api.tvmaze.com/shows
+  if (!state.isShowListInitialized) {
+    fetch(SHOWS_URL)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `Falied to fetch avaliable shows with status: ${response.status}`,
+          );
+        }
+        return response.json();
+      })
+      .then((shows) => {
+        console.log(shows);
+        state.shows = shows;
+        state.isShowListInitialized = true;
+        populateShowSelect(shows);
+      })
+      .catch((error) => {
+        showErrorMessage(error);
+      });
+  }
 }
 
 // Render page
@@ -96,11 +125,26 @@ function populateEpisodeSelect(episodes) {
   });
 }
 
+function populateShowSelect(shows) {
+  showSelect.innerHTML = "";
+  shows.forEach((show) => {
+    const option = document.createElement("option");
+    option.value = show.id;
+    option.textContent = `${show.name}`;
+    showSelect.appendChild(option);
+  });
+}
+
 episodeSelect.addEventListener("change", (event) => {
   const element = document.getElementById(event.target.value);
   if (element) {
-    element.scrollIntoView({behavior: "smooth", block: "start"});
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+});
+
+showSelect.addEventListener("change", (event) => {
+  state.currentShowID = event.target.value;
+  setup();
 });
 
 // _____________________________________________________________________________
