@@ -9,6 +9,8 @@ const showSelect = document.getElementById("show-select");
 const SHOWS_URL = "https://api.tvmaze.com/shows";
 const DEFAULT_SHOW_ID = 82; // Game of Thrones
 
+const PLACEHOLDER_IMAGE = "https://placehold.co/250x140";
+
 // State
 const state = {
   episodes: [],
@@ -175,7 +177,9 @@ function addEpisode(episode) {
 
   // put the episode info inside the clone
   clone.querySelector("h2").textContent = `${episode.name} - ${episodeCode}`;
-  clone.querySelector("img").src = episode.image.medium;
+  clone.querySelector("img").src = episode.image
+    ? episode.image.medium
+    : PLACEHOLDER_IMAGE;
   clone.querySelector("p").textContent = episode.summary;
   clone.querySelector("article").id = episode.id;
 
