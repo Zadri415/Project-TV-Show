@@ -18,6 +18,7 @@ const state = {
   currentShowID: DEFAULT_SHOW_ID,
   isShowListInitialized: false,
   searchTerm: "",
+  episodeCache: {}, // NEW: { [showID]: episodes[] }
 };
 
 // _____________________________________________________________________________
@@ -42,34 +43,14 @@ function showErrorMessage(error) {
 
 function setup() {
   showLoadingMessage();
+  loadEpisodes();
 
-  // fetch episodes
-  fetch(`https://api.tvmaze.com/shows/${state.currentShowID}/episodes`)
-    .then((response) => {
-      if (!response.ok) {
-        // fetch only rejects on network failure, not on 4xx/5xx responses,
-        // so this check is needed to catch a bad status too.
-        throw new Error(`Request failed with status ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((episodes) => {
-      state.episodes = episodes;
-      render();
-    })
-    .catch((error) => {
-      showErrorMessage(error);
-      throw new Error(error);
-    });
-
-  // fetch avaliable shows
-  // https://api.tvmaze.com/shows
   if (!state.isShowListInitialized) {
     fetch(SHOWS_URL)
       .then((response) => {
         if (!response.ok) {
           throw new Error(
-            `Falied to fetch avaliable shows with status: ${response.status}`,
+            `Failed to fetch available shows with status: ${response.status}`,
           );
         }
         return response.json();
@@ -85,6 +66,34 @@ function setup() {
         throw new Error(error);
       });
   }
+}
+
+function loadEpisodes() {
+  const cached = state.episodeCache[state.currentShowID];
+
+  if (cached) {
+    state.episodes = cached;
+    console.log("Using cached state");
+    render();
+    return;
+  }
+
+  fetch(`https://api.tvmaze.com/shows/${state.currentShowID}/episodes`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((episodes) => {
+      state.episodeCache[state.currentShowID] = episodes; // cache it
+      state.episodes = episodes;
+      render();
+    })
+    .catch((error) => {
+      showErrorMessage(error);
+      throw new Error(error);
+    });
 }
 
 // Render page
