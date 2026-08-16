@@ -6,14 +6,14 @@ const searchCount = document.getElementById("search-count");
 const episodeSelect = document.getElementById("episode-select");
 const showSelect = document.getElementById("show-select");
 
-const EPISODES_URL = "https://api.tvmaze.com/shows/82/episodes";
 const SHOWS_URL = "https://api.tvmaze.com/shows";
+const DEFAULT_SHOW_ID = 82; // Game of Thrones
 
 // State
 const state = {
   episodes: [],
   shows: [],
-  currentShowID: 82, // Game of Thrones
+  currentShowID: DEFAULT_SHOW_ID,
   isShowListInitialized: false,
   searchTerm: "",
 };
@@ -57,6 +57,7 @@ function setup() {
     })
     .catch((error) => {
       showErrorMessage(error);
+      throw new Error(error);
     });
 
   // fetch avaliable shows
@@ -72,13 +73,14 @@ function setup() {
         return response.json();
       })
       .then((shows) => {
-        console.log(shows);
         state.shows = shows;
         state.isShowListInitialized = true;
         populateShowSelect(shows);
+        sortSelect(showSelect);
       })
       .catch((error) => {
         showErrorMessage(error);
+        throw new Error(error);
       });
   }
 }
@@ -125,14 +127,23 @@ function populateEpisodeSelect(episodes) {
   });
 }
 
+function sortSelect(selectElement) {
+  const options = Array.from(selectElement.options);
+
+  options.sort((a, b) => a.text.localeCompare(b.text));
+
+  options.forEach((option) => selectElement.appendChild(option));
+}
+
 function populateShowSelect(shows) {
-  showSelect.innerHTML = "";
   shows.forEach((show) => {
     const option = document.createElement("option");
     option.value = show.id;
     option.textContent = `${show.name}`;
     showSelect.appendChild(option);
   });
+
+  showSelect.value = state.currentShowID;
 }
 
 episodeSelect.addEventListener("change", (event) => {
