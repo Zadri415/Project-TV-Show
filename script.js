@@ -73,7 +73,6 @@ function loadEpisodes() {
 
   if (cached) {
     state.episodes = cached;
-    console.log("Using cached state");
     render();
     return;
   }
