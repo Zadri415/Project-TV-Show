@@ -4,13 +4,21 @@ const episodeTemplate = document.getElementById("episode-template");
 const episodeSearch = document.getElementById("episode-search");
 const searchCount = document.getElementById("search-count");
 const episodeSelect = document.getElementById("episode-select");
+const showSelect = document.getElementById("show-select");
 
-const EPISODES_URL = "https://api.tvmaze.com/shows/82/episodes";
+const SHOWS_URL = "https://api.tvmaze.com/shows";
+const DEFAULT_SHOW_ID = 82; // Game of Thrones
+
+const PLACEHOLDER_IMAGE = "https://placehold.co/250x140";
 
 // State
 const state = {
   episodes: [],
+  shows: [],
+  currentShowID: DEFAULT_SHOW_ID,
+  isShowListInitialized: false,
   searchTerm: "",
+  episodeCache: {}, // NEW: { [showID]: episodes[] }
 };
 
 // _____________________________________________________________________________
@@ -35,22 +43,55 @@ function showErrorMessage(error) {
 
 function setup() {
   showLoadingMessage();
+  loadEpisodes();
 
-  fetch(EPISODES_URL)
+  if (!state.isShowListInitialized) {
+    fetch(SHOWS_URL)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch available shows with status: ${response.status}`,
+          );
+        }
+        return response.json();
+      })
+      .then((shows) => {
+        state.shows = shows;
+        state.isShowListInitialized = true;
+        populateShowSelect(shows);
+        sortSelect(showSelect);
+      })
+      .catch((error) => {
+        showErrorMessage(error);
+        throw new Error(error);
+      });
+  }
+}
+
+function loadEpisodes() {
+  const cached = state.episodeCache[state.currentShowID];
+
+  if (cached) {
+    state.episodes = cached;
+    render();
+    return;
+  }
+
+  fetch(`https://api.tvmaze.com/shows/${state.currentShowID}/episodes`)
     .then((response) => {
       if (!response.ok) {
-        // fetch only rejects on network failure, not on 4xx/5xx responses,
-        // so this check is needed to catch a bad status too.
         throw new Error(`Request failed with status ${response.status}`);
       }
       return response.json();
     })
     .then((episodes) => {
+      state.episodeCache[state.currentShowID] = episodes; // cache it
       state.episodes = episodes;
       render();
     })
     .catch((error) => {
       showErrorMessage(error);
+      throw new Error(error);
     });
 }
 
@@ -96,11 +137,35 @@ function populateEpisodeSelect(episodes) {
   });
 }
 
+function sortSelect(selectElement) {
+  const options = Array.from(selectElement.options);
+
+  options.sort((a, b) => a.text.localeCompare(b.text));
+
+  options.forEach((option) => selectElement.appendChild(option));
+}
+
+function populateShowSelect(shows) {
+  shows.forEach((show) => {
+    const option = document.createElement("option");
+    option.value = show.id;
+    option.textContent = `${show.name}`;
+    showSelect.appendChild(option);
+  });
+
+  showSelect.value = state.currentShowID;
+}
+
 episodeSelect.addEventListener("change", (event) => {
   const element = document.getElementById(event.target.value);
   if (element) {
-    element.scrollIntoView({behavior: "smooth", block: "start"});
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+});
+
+showSelect.addEventListener("change", (event) => {
+  state.currentShowID = event.target.value;
+  setup();
 });
 
 // _____________________________________________________________________________
@@ -120,7 +185,9 @@ function addEpisode(episode) {
 
   // put the episode info inside the clone
   clone.querySelector("h2").textContent = `${episode.name} - ${episodeCode}`;
-  clone.querySelector("img").src = episode.image.medium;
+  clone.querySelector("img").src = episode.image
+    ? episode.image.medium
+    : PLACEHOLDER_IMAGE;
   clone.querySelector("p").textContent = episode.summary;
   clone.querySelector("article").id = episode.id;
 
