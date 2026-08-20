@@ -9,70 +9,40 @@
   </head>
 
   <body>
-    <h1>TV Shows</h1>
+    <!-- Episode select drop-down menu -->
 
-    <!-- SHOWS LISTING VIEW -->
-    <section id="shows-view">
-      <label>
-        Search shows
-        <input
-          type="search"
-          id="show-search"
-          placeholder="Search by name, genre, or summary"
-        />
-        🔍
-      </label>
-      <p id="shows-count"></p>
+    <select id="show-select"></select>
 
-      <div id="shows-grid"></div>
+    <label for="episode-select">Choose an episode:</label>
+    <select id="episode-select">
+      <option value="">Show all episodes</option>
+    </select>
 
-      <!-- Template for a show card. JavaScript clones this and fills in the fields. -->
-      <template id="show-template">
-        <article class="show-card">
-          <h2><button type="button" class="show-name"></button></h2>
-          <img class="show-image" src="" alt="" />
-          <p class="show-summary"></p>
-          <p class="show-genres"></p>
-          <p class="show-status"></p>
-          <p class="show-rating"></p>
-          <p class="show-runtime"></p>
-        </article>
-      </template>
-    </section>
+    <!-- Search bar -->
+    <label>
+      Search
+      <input type="search" id="episode-search" placeholder="Search term" /> 🔍
+    </label>
+    <span id="search-count"></span>
 
-    <!-- EPISODES VIEW (hidden until a show is opened) -->
-    <section id="episodes-view" class="hidden">
-      <button id="back-to-shows" type="button">&larr; Back to shows</button>
-      <h2 id="current-show-name"></h2>
+    <h1>TV Show Episodes</h1>
+    <div id="root"></div>
 
-      <label for="episode-select">Choose an episode:</label>
-      <select id="episode-select">
-        <option value="">Show all episodes</option>
-      </select>
-
-      <!-- Search bar -->
-      <label>
-        Search
-        <input type="search" id="episode-search" placeholder="Search term" /> 🔍
-      </label>
-      <span id="search-count"></span>
-
-      <div id="root"></div>
-
-      <!-- Template for an episode card. JavaScript can clone this and fill in the fields. -->
-      <template id="episode-template">
-        <article>
-          <h2>Episode Title - S00E00</h2>
-          <img src="" alt="" />
-          <p></p>
-        </article>
-      </template>
-    </section>
+    <!-- Template for an episode card. JavaScript can clone this and fill in the fields. -->
+    <template id="episode-template">
+      <article>
+        <h2>Episode Title - S00E00</h2>
+        <img src="" />
+        <p></p>
+      </article>
+    </template>
 
     <footer>
       Episode Data from
       <a href="https://www.tvmaze.com/">TVMaze.com</a>
     </footer>
+
+    <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
 
     <!-- Loads YOUR javascript code -->
     <script src="script.js"></script>
