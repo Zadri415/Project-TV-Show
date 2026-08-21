@@ -9,6 +9,7 @@ const episodesView = document.getElementById("episodes-view");
 const showsGrid = document.getElementById("shows-grid");
 const showsCount = document.getElementById("shows-count");
 const showSearch = document.getElementById("show-search");
+const showSelect = document.getElementById("show-select");
 const backToShowsBtn = document.getElementById("back-to-shows");
 const currentShowNameElem = document.getElementById("current-show-name");
 const showTemplate = document.getElementById("show-template");
@@ -51,6 +52,7 @@ function showErrorMessage(error) {
 
 function setup() {
   setupShowSearch();
+  setupShowSelect();
   setupBackToShows();
   episodeSelect.addEventListener("change", (event) => {
     const element = document.getElementById(event.target.value);
@@ -78,6 +80,7 @@ function setup() {
       );
       state.isShowListInitialized = true;
       renderShows(state.shows);
+      populateShowSelect(state.shows);
     })
     .catch((error) => {
       showErrorMessage(error);
@@ -105,6 +108,25 @@ function setupShowSearch() {
   showSearch.addEventListener("input", () => {
     state.showSearchTerm = showSearch.value;
     renderShows(filterShows());
+  });
+}
+
+function populateShowSelect(shows) {
+  shows.forEach((show) => {
+    const option = document.createElement("option");
+    option.value = show.id;
+    option.textContent = show.name;
+    showSelect.appendChild(option);
+  });
+}
+
+function setupShowSelect() {
+  showSelect.addEventListener("change", () => {
+    if (!showSelect.value) return;
+    const show = state.shows.find(
+      (show) => String(show.id) === showSelect.value,
+    );
+    if (show) openShow(show);
   });
 }
 
@@ -149,6 +171,7 @@ function openShow(show) {
   state.currentShowID = show.id;
   state.searchTerm = "";
   episodeSearch.value = "";
+  showSelect.value = show.id;
 
   currentShowNameElem.textContent = show.name;
   showsView.classList.add("hidden");
@@ -161,6 +184,7 @@ function setupBackToShows() {
   backToShowsBtn.addEventListener("click", () => {
     episodesView.classList.add("hidden");
     showsView.classList.remove("hidden");
+    showSelect.value = "";
   });
 }
 
